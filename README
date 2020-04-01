@@ -1,0 +1,68 @@
+This script is for creating a system that uses two versions
+of sendmail. One is a RX that runs as just a user, the other
+is the TX that runs as root. I didn't write that part of this
+script. I simply re-packaged all of this so someone else can
+get up and running quickly. It's tested code, should work:
+
+CENTOS 8
+Fedora 31
+
+It won't work on fedora 30, the amavis packages are named differently.
+
+Do you use let's encrypt? Change that part in the script to point
+to your files. Make sure you check the maillog files for errors
+when all of this is running. Don't know about let's encrypt? It's
+at web site - https://letsencrypt.org. You too can get a certificate
+for your machine, FREE! Please support them. Like beer, you should
+help pay for it. It'll support https, sendmail, possibly other keys
+that may be useful to you and use a trusted certificate.
+
+
+
+Script will use the machine's name. Make sure it's defined to what it's
+supposed to be. Set up your DNS correctly. That is, make sure you have
+MX record(s). I try to make this all automatic.
+
+
+
+Changes files in:
+/etc/mail
+/root
+root's crontab
+
+Installs amavis, spamassassin, sendmail, sendmail-cf, just check the script.
+
+When the machine is booted it'll run the /root/mail.bash script. That fires up
+the sendmail daemons. Don't run the sendmail startup stuff. If you have sendmail
+already running make sure you back up /etc. disable sendmail.
+
+I populate a whole bunch of /etc/mail/access entries. It'll probably overwrite your
+file if you have stuff in there. This is not comprehensive, just my suggestions on
+domains that tend to send out crap. If you like crap just remove those deny
+entries.
+
+Enjoy!
+
+Constructive criticism, advice, enhacements welcome.
+
+
+Revisions:
+
+20200401 Robert Thomas	Initial revision
+
+
+
+
+Operation
+Here is what it should look like:
+
+Apr  1 11:47:32 receive-host-name sm-mta-rx[15318]: STARTTLS=server, relay=mail-io1-f47.sender.com [209.85.166.47], version=TLSv1.3, verify=FAIL, cipher=TLS_AES_128_GCM_SHA256, bits=128/128
+Apr  1 11:47:32 receive-host-name sm-mta-rx[15318]: 031FlRBr015318: from=<sendername@sendhost.com>, size=2254, class=0, nrcpts=1, msgid=<CAH8gBZMkiQvHgt3R3Qk5=+NzJ0M-MhrhkUQjijJv0NS+0NScpA@mail.gmail.com>, proto=ESMTPS, daemon=MTA-RX, relay=mail-io1-f47.sender.com [209.85.166.47]
+Apr  1 11:47:32 receive-host-name sm-mta-rx[15318]: 031FlRBr015318: to=<to_address@to_host.com>, delay=00:00:00, mailer=esmtp, pri=32254, stat=queued
+Apr  1 11:47:32 receive-host-name clamd[3303]: SelfCheck: Database status OK.
+Apr  1 11:47:34 receive-host-name sm-mta-tx[15323]: 031FlYMw015323: from=<sendername@sendhost.com>, size=3305, class=0, nrcpts=1, msgid=<CAH8gBZMkiQvHgt3R3Qk5=+NzJ0M-MhrhkUQjijJv0NS+0NScpA@mail.gmail.com>, bodytype=7BIT, proto=ESMTP, daemon=MTA-TX, relay=localhost [127.0.0.1]
+Apr  1 11:47:34 receive-host-name amavis[15280]: (15280-01) Passed CLEAN {RelayedInbound}, [127.0.0.1] [209.85.166.47] <sendername@sendhost.com> -> <to_address@to_host.com>, Message-ID: <CAH8gBZMkiQvHgt3R3Qk5=+NzJ0M-MhrhkUQjijJv0NS+0NScpA@mail.gmail.com>, mail_id: 34YhKzBxslqS, Hits: 2.036, size: 2580, queued_as: 250 2.0.0 031FlYMw015323 Message accepted for delivery, dkim_sd=20161025:gmail.com, 1540 ms
+Apr  1 11:47:34 receive-host-name sm-mta-rx[15320]: 031FlRBr015318: to=<to_address@to_host.com>, delay=00:00:02, xdelay=00:00:02, mailer=esmtp, pri=122254, relay=[127.0.0.1] [127.0.0.1], dsn=2.0.0, stat=Sent
+Apr  1 11:47:34 receive-host-name sm-mta-tx[15324]: 031FlYMw015323: to=<to_address@to_host.com>, delay=00:00:00, xdelay=00:00:00, mailer=local, pri=33473, dsn=2.0.0, stat=Sent
+
+Make sure you see the top line, even if it says FAIL. It was encrypted to your host.
