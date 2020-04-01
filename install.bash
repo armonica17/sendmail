@@ -1,5 +1,5 @@
 #!/bin/bash
-grep CentOS /etc/redhat-release
+grep CentOS /etc/redhat-release >/dev/null
 if [ $? == 0 ] ; then
     centos=1
 else
