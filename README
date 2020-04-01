@@ -22,8 +22,8 @@ that may be useful to you and use a trusted certificate.
 Script will use the machine's name. Make sure it's defined to what it's
 supposed to be. Set up your DNS correctly. That is, make sure you have
 MX record(s). I try to make this all automatic.
-
-
+ 
+ 
 
 Changes files in:
 /etc/mail
