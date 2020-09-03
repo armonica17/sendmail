@@ -22,8 +22,6 @@ chown smmsp:smmsp /var/spool/mqueue-rx
 dnf -y install clamav clamav-update clamd
 /bin/systemctl start spamassassin.service
 /bin/systemctl enable spamassassin.service
-#/bin/systemctl enable clamd@scan
-#/bin/systemctl start clamd@scan
 setsebool -P antivirus_can_scan_system 1
 setsebool -P clamd_use_jit 1
 cp /usr/share/doc/clamd/clamd.conf /etc/clamd.d/clamd.conf
@@ -34,6 +32,8 @@ gawk -i inplace '/User/{gsub(/<USER>/, "clamscan")}; {print}' /etc/clamd.d/clamd
 # Set it to listen to tcp, otherwise it won't start
 sed -i '/^#TCP/s/^#//' /etc/clamd.d/clamd.conf
 # How to debug? Use this - /usr/sbin/clamd -c /etc/clamd.d/clamd.conf
+/bin/systemctl enable clamd@scan
+/bin/systemctl start clamd@scan
 
 cat >/etc/mail/thishost-rx.mc <<- "EOF"
 include(`/usr/share/sendmail-cf/m4/cf.m4')dnl
