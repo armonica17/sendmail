@@ -30,8 +30,9 @@ sed -i '/^Example/d' /etc/clamd.d/clamd.conf
 # Set the USER to clamscan
 gawk -i inplace '/User/{gsub(/<USER>/, "clamscan")}; {print}' /etc/clamd.d/clamd.conf
 # Set it to listen to tcp, otherwise it won't start
-sed -i '/^#TCP/s/^#//' /etc/clamd.d/clamd.conf
+#sed -i '/^#TCP/s/^#//' /etc/clamd.d/clamd.conf
 # How to debug? Use this - /usr/sbin/clamd -c /etc/clamd.d/clamd.conf
+gawk -i inplace '/#LocalSocket / {print "LocalSocket /run/clamd.scan/clamd.sock"}; { print }' /etc/clamd.d/clamd.conf
 /bin/systemctl enable clamd@scan
 /bin/systemctl start clamd@scan
 
