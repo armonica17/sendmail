@@ -10,6 +10,7 @@ if [ $centos == 0 ] ; then
 else
     dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
     dnf --enablerepo=epel,PowerTools -y install amavisd-new clamd perl-Digest-SHA1 perl-IO-stringy make cronie sendmail spamassassin clamd sendmail-cf
+    dnf install clamav-server clamav-data clamav-update clamav-filesystem clamav clamav-scanner-systemd clamav-devel clamav-lib clamav-server-systemd
 fi
 
 firewall-cmd --permanent --add-port=25/tcp
@@ -25,7 +26,14 @@ dnf -y install clamav clamav-update clamd
 #/bin/systemctl start clamd@scan
 setsebool -P antivirus_can_scan_system 1
 setsebool -P clamd_use_jit 1
-
+cp /usr/share/doc/clamd/clamd.conf /etc/clamd.d/clamd.conf
+# Get rid of Example
+sed -i '/^Example/d' /etc/clamd.d/clamd.conf
+# Set the USER to clamscan
+gawk -i inplace '/User/{gsub(/<USER>/, "clamscan")}; {print}' /etc/clamd.d/clamd.conf
+# Set it to listen to tcp, otherwise it won't start
+sed -i '/^#TCP/s/^#//' /etc/clamd.d/clamd.conf
+# How to debug? Use this - /usr/sbin/clamd -c /etc/clamd.d/clamd.conf
 
 cat >/etc/mail/thishost-rx.mc <<- "EOF"
 include(`/usr/share/sendmail-cf/m4/cf.m4')dnl
