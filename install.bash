@@ -141,7 +141,9 @@ define(`ESMTP_MAILER_ARGS',`TCP $h 10024')dnl  To tcp port 10024 instead of 25
 MODIFY_MAILER_FLAGS(`ESMTP', `+z')dnl  Speak LMTP (this is optional)
 define(`SMTP_MAILER_MAXMSGS',`10')dnl  Max no. of msgs in a single connection
 define(`confTO_DATAFINAL',`20m')dnl    20 minute timeout for content checking
-DAEMON_OPTIONS(`Name=MTA-RX')dnl       Daemon name used in logged messages
+dnl DAEMON_OPTIONS(`Name=MTA-RX')dnl       Daemon name used in logged messages
+dnl ipv6 will also listen for ipv4. In case this doesn't work just use the above line.
+DAEMON_OPTIONS(`Name=MTA-v6,Family=inet6,Port=smtp')dnl
 dnl DAEMON_OPTIONS(`Port=smtps, Name=TLSMTA, M=s')dnl
 
 dnl Disable local delivery, as all local mail will go to MAIL_HUB
