@@ -10,7 +10,7 @@ if [ $centos == 0 ] ; then
 else
     dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
     dnf --enablerepo=epel,PowerTools -y install amavisd-new clamd perl-Digest-SHA1 perl-IO-stringy make cronie sendmail spamassassin clamd sendmail-cf
-    dnf install clamav-server clamav-data clamav-update clamav-filesystem clamav clamav-scanner-systemd clamav-devel clamav-lib clamav-server-systemd
+    dnf -y install clamav-server clamav-data clamav-update clamav-filesystem clamav clamav-scanner-systemd clamav-devel clamav-lib clamav-server-systemd
 fi
 
 firewall-cmd --permanent --add-port=25/tcp
