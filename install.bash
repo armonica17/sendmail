@@ -6,11 +6,26 @@ else
     centos=0
 fi
 if [ $centos == 0 ] ; then
-    dnf -y install cronie sendmail spamassassin clamd sendmail-cf make amavis.noarch amavis-doc.noarch amavisd-milter.x86_64
+    dnf -y install cronie sendmail spamassassin clamd sendmail-cf make amavis.noarch amavis-doc.noarch amavisd-milter
 else
     dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
-    dnf --enablerepo=epel,PowerTools -y install amavisd-new clamd perl-Digest-SHA1 perl-IO-stringy make cronie sendmail spamassassin clamd sendmail-cf
-    dnf -y install clamav-server clamav-data clamav-update clamav-filesystem clamav clamav-scanner-systemd clamav-devel clamav-lib clamav-server-systemd
+    if [ $? == 1 ] ; then
+      echo ERROR             ERROR               ERROR
+      echo STOPPING!
+      exit
+    fi
+    dnf --enablerepo=epel,powertools -y install amavisd-new perl-Digest-SHA1 perl-IO-stringy make cronie sendmail spamassassin sendmail-cf
+    if [ $? == 1 ] ; then
+      echo ERROR             ERROR               ERROR
+      echo STOPPING!
+      exit
+    fi
+    dnf -y install clamav-devel clamav-lib clamav-data clamd clamav-update clamav-filesystem clamav
+    if [ $? == 1 ] ; then
+      echo ERROR             ERROR               ERROR
+      echo STOPPING!
+      exit
+    fi
 fi
 
 firewall-cmd --permanent --add-port=25/tcp
@@ -33,6 +48,8 @@ gawk -i inplace '/User/{gsub(/<USER>/, "clamscan")}; {print}' /etc/clamd.d/clamd
 #sed -i '/^#TCP/s/^#//' /etc/clamd.d/clamd.conf
 # How to debug? Use this - /usr/sbin/clamd -c /etc/clamd.d/clamd.conf
 gawk -i inplace '/#LocalSocket / {print "LocalSocket /run/clamd.scan/clamd.sock"}; { print }' /etc/clamd.d/clamd.conf
+systemctl enable clamav-daemon.service
+systemctl start clamav-daemon.service
 /bin/systemctl enable clamd@scan
 /bin/systemctl start clamd@scan
 
